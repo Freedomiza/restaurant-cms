@@ -6,6 +6,14 @@ type createDishPayload {
   dish: Dish
 }
 
+input createOrderInput {
+  data: OrderInput
+}
+
+type createOrderPayload {
+  order: Order
+}
+
 input createRestaurantInput {
   data: RestaurantInput
 }
@@ -41,6 +49,14 @@ input deleteDishInput {
 
 type deleteDishPayload {
   dish: Dish
+}
+
+input deleteOrderInput {
+  where: InputID
+}
+
+type deleteOrderPayload {
+  order: Order
 }
 
 input deleteRestaurantInput {
@@ -107,6 +123,15 @@ input editFileInput {
   related: [ID]
 }
 
+input editOrderInput {
+  city: String
+  address: String
+  dishes: JSON
+  amount: Int
+  state: String
+  user: ID
+}
+
 input editRestaurantInput {
   name: String
   description: String
@@ -132,6 +157,7 @@ input editUserInput {
   confirmed: Boolean
   blocked: Boolean
   role: ID
+  orders: [ID]
 }
 
 input FileInput {
@@ -159,12 +185,15 @@ scalar JSON
 """The `Long` scalar type represents 52-bit integers"""
 scalar Long
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Dish | createDishPayload | updateDishPayload | deleteDishPayload | Restaurant | createRestaurantPayload | updateRestaurantPayload | deleteRestaurantPayload | UploadFile | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Dish | createDishPayload | updateDishPayload | deleteDishPayload | Order | createOrderPayload | updateOrderPayload | deleteOrderPayload | Restaurant | createRestaurantPayload | updateRestaurantPayload | deleteRestaurantPayload | UploadFile | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload
 
 type Mutation {
   createDish(input: createDishInput): createDishPayload
   updateDish(input: updateDishInput): updateDishPayload
   deleteDish(input: deleteDishInput): deleteDishPayload
+  createOrder(input: createOrderInput): createOrderPayload
+  updateOrder(input: updateOrderInput): updateOrderPayload
+  deleteOrder(input: deleteOrderInput): deleteOrderPayload
   createRestaurant(input: createRestaurantInput): createRestaurantPayload
   updateRestaurant(input: updateRestaurantInput): updateRestaurantPayload
   deleteRestaurant(input: deleteRestaurantInput): deleteRestaurantPayload
@@ -189,9 +218,32 @@ type Mutation {
   upload(refId: ID, ref: String, source: String, file: Upload!): UploadFile!
 }
 
+type Order {
+  id: ID!
+  created_at: DateTime!
+  updated_at: DateTime!
+  city: String
+  address: String
+  dishes: JSON
+  amount: Int
+  state: String
+  user: UsersPermissionsUser
+}
+
+input OrderInput {
+  city: String
+  address: String
+  dishes: JSON
+  amount: Int
+  state: String
+  user: ID
+}
+
 type Query {
   dish(id: ID!): Dish
   dishes(sort: String, limit: Int, start: Int, where: JSON): [Dish]
+  order(id: ID!): Order
+  orders(sort: String, limit: Int, start: Int, where: JSON): [Order]
   restaurant(id: ID!): Restaurant
   restaurants(sort: String, limit: Int, start: Int, where: JSON): [Restaurant]
   files(sort: String, limit: Int, start: Int, where: JSON): [UploadFile]
@@ -241,6 +293,15 @@ input updateDishInput {
 
 type updateDishPayload {
   dish: Dish
+}
+
+input updateOrderInput {
+  where: InputID
+  data: editOrderInput
+}
+
+type updateOrderPayload {
+  order: Order
 }
 
 input updateRestaurantInput {
@@ -298,6 +359,7 @@ input UserInput {
   confirmed: Boolean
   blocked: Boolean
   role: ID
+  orders: [ID]
 }
 
 type UsersPermissionsMe {
@@ -343,4 +405,5 @@ type UsersPermissionsUser {
   confirmed: Boolean
   blocked: Boolean
   role: UsersPermissionsRole
+  orders(sort: String, limit: Int, start: Int, where: JSON): [Order]
 }

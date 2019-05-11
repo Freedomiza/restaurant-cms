@@ -12,8 +12,7 @@ import {
   CardSubtitle,
   CardText, CardTitle, Col, Row,
 } from 'reactstrap';
-
-import './RestaurantList.scss';
+import { IRestaurant } from '../interfaces/Restaurant';
 
 type Props =  {
   data: {
@@ -41,33 +40,53 @@ class RestaurantList extends React.Component<Props> {
     );
       if (searchQuery.length !== 0) {
         return (
-          <div className="h-100 container row">
-            {searchQuery.map(res => (
-              <div className="col" key={res.id}>
-                <Card
-                  className="h-100"
-                >
-                  <CardImg
-                    top={true}
-                    style={{ height: 250 }}
-                    src={`http://localhost:1337${res.image.url}`}
-                  />
-                  <CardBody>
-                    <CardTitle>{res.name}</CardTitle>
-                    <CardText>{res.description.slice(0, 100)}</CardText>
-                  </CardBody>
-                  <div className="card-footer">
-                    <Link
-                      as={`/restaurants/${res.id}`}
-                      href={`/restaurants?id=${res.id}`}
+          <React.Fragment>
+
+            <div className="h-100 container row">
+              {searchQuery.map((res: IRestaurant) => (
+                <div className="col" key={res.id}>
+                  <Card
+                    className="h-100"
                     >
-                      <a className="btn btn-primary">View</a>
-                    </Link>
-                  </div>
-                </Card>
-              </div>
-            ))}
-          </div>
+                    <CardImg
+                      top={true}
+                      style={{ height: 250 }}
+                      src={`http://localhost:1337${res.image.url}`}
+                      />
+                    <CardBody>
+                      <CardTitle>{res.name}</CardTitle>
+                      <CardText>{res.description.slice(0, 100)}</CardText>
+                    </CardBody>
+                    <div className="card-footer">
+                      <Link
+                        as={`/restaurants/${res.id}`}
+                        href={`/restaurants?id=${res.id}`}
+                        >
+                        <a className="btn btn-primary">View</a>
+                      </Link>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </div>
+
+            <style jsx global>{`
+              a {
+                color: white;
+              }
+              a:link {
+                text-decoration: none;
+                color: white;
+              }
+              a:hover {
+                color: white;
+              }
+              .card-columns {
+                column-count: 3;
+              }
+            `}
+            </style>
+          </React.Fragment>
         );
       }
       return <h1>No Restaurants Found</h1>;

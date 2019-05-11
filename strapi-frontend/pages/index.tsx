@@ -10,8 +10,8 @@ import {
   Row,
 } from 'reactstrap';
 
-import Layout from '../components/Layout';
 import RestaurantList from '../components/RestaurantList';
+import defaultPage from '../hocs/defaultPage';
 
 type Props = {
 
@@ -33,31 +33,29 @@ class IndexPage extends React.Component<Props, State> {
 
   render () {
     return (
-      <Layout title="NextJS Apollo Strapi">
-        <div className="container-fluid">
-          <Row>
-            <Col>
-              <div className="search">
-                <InputGroup>
-                  <InputGroupAddon addonType="append"> Search </InputGroupAddon>
-                  <Input onChange={this.onChange.bind(this)} />
-                </InputGroup>
-              </div>
-              <RestaurantList search={this.state.query} />
-            </Col>
-          </Row>
-          <style>
-            {`
-              .search {
-                margin: 20px;
-                width: 500px;
-              }
-            `}
-          </style>
-        </div>
-      </Layout>
+      <div className="container-fluid">
+        <Row>
+          <Col>
+            <div className="search">
+              <InputGroup>
+                <InputGroupAddon addonType="append"> Search </InputGroupAddon>
+                <Input onChange={this.onChange.bind(this)} />
+              </InputGroup>
+            </div>
+            <RestaurantList search={this.state.query} />
+          </Col>
+        </Row>
+        <style>
+          {`
+            .search {
+              margin: 20px;
+              width: 500px;
+            }
+          `}
+        </style>
+      </div>
     );
   }
 }
 
-export default IndexPage;
+export default defaultPage(IndexPage);

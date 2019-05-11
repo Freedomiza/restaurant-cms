@@ -2,14 +2,20 @@
 import * as React from 'react';
 import App, { Container } from 'next/app';
 import Head from 'next/head';
-import withData from '../lib/apollo';
+import { ApolloProvider } from 'react-apollo';
+import { StripeProvider } from 'react-stripe-elements';
+import withApolloClient from '../hocs/withApolloClient';
+import Layout from '../components/Layout';
+import { AppProvider } from '../context/AppProvider';
 
 type Props = {
   Component: React.ReactNode | any;
   router: any;
   ctx: any;
+  apolloClient: any,
+  isAuthenticated: boolean,
 };
-class MyApp extends App {
+class MyApp extends App<Props> {
   static async getInitialProps({ Component, router, ctx }: Props) {
     let pageProps = {};
 
@@ -20,9 +26,9 @@ class MyApp extends App {
   }
 
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, apolloClient, isAuthenticated, ctx  } = this.props;
     return (
-      <>
+      <React.Fragment>
         <Head>
           <link
             rel="stylesheet"
@@ -33,11 +39,31 @@ class MyApp extends App {
         </Head>
 
         <Container>
-          <Component {...pageProps} />
+          <ApolloProvider client={apolloClient}>
+            <AppProvider>
+              <Layout isAuthenticated={isAuthenticated} {...pageProps}>
+                <Component {...pageProps} />
+              </Layout>
+            </AppProvider>
+          </ApolloProvider>
         </Container>
-      </>
+        <style jsx global>
+          {`
+            a {
+              color: white !important;
+            }
+            a:link {
+              text-decoration: none !important;
+              color: white !important;
+            }
+            a:hover {
+              color: white;
+            }
+          `}
+        </style>
+      </React.Fragment>
     );
   }
 }
 
-export default withData(MyApp);
+export default withApolloClient(MyApp);

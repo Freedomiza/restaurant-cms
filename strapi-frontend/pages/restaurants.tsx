@@ -1,5 +1,5 @@
 
-import * as React from 'react';
+import React, { useContext } from 'react';
 import gql from 'graphql-tag';
 import { withRouter } from 'next/router';
 import { graphql } from 'react-apollo';
@@ -16,62 +16,92 @@ import {
   Col,
   Row,
 } from 'reactstrap';
+import { IRestaurant } from '../interfaces/Restaurant';
+import defaultPage from '../hocs/defaultPage';
+import Cart from '../components/Cart';
+import { IDish } from '../interfaces/Dish';
+import { AppContext } from '../context/AppProvider';
 
-import './restaurants.scss';
 type Props = {
-  data: any,
+  data: {
+    loading: boolean,
+    error: string,
+    restaurant: IRestaurant,
+  },
   router: any,
   context: any,
   isAuthenticated: boolean,
 };
 
-class Restaurants extends React.Component<Props> {
-  render () {
-    const {
+const Restaurants: React.FunctionComponent<Props> = (props) => {
+  const {
       data: { loading, error, restaurant },
       router,
       context,
       isAuthenticated,
-    } = this.props;
-    if (error) return 'Error Loading Dishes';
-    if (restaurant) {
-      return (
-          <>
+    } = props;
+
+  const { addItem } = useContext(AppContext);
+  if (error) return <h2>Error Loading Dishes</h2>;
+  if (restaurant) {
+    return (
+        <React.Fragment>
           <h1>{restaurant.name}</h1>
           <Row>
             <Col xs="9" style={{ padding: 0 }}>
-              <div style={{ display: 'inline-block' }} className="h-100">
-                {restaurant.dishes.map(res => (
+              <div className="h-100 w-100">
+                {restaurant.dishes.map((dish: IDish) => (
                   <Card
-                    style={{ width: '30%', margin: '0 10px' }}
-                    key={res.id}
+                    key={dish.id}
+                    className="w-50"
                   >
                     <CardImg
                       top={true}
                       style={{ height: 250 }}
-                      src={`http://localhost:1337${res.image.url}`}
+                      src={`http://localhost:1337${dish.image.url}`}
                     />
                     <CardBody>
-                      <CardTitle>{res.name}</CardTitle>
-                      <CardText>{res.description}</CardText>
+                      <CardTitle>{dish.name}</CardTitle>
+                      <CardText>{dish.description}</CardText>
                     </CardBody>
                     <div className="card-footer">
-                      <Button outline color="primary">
+                      <Button outline color="primary" onClick={() => addItem(dish)}>
                         + Add To Cart
                       </Button>
-                    
                     </div>
                   </Card>
                 ))}
               </div>
             </Col>
+            <Col>
+                  <Cart isAuthenticated={isAuthenticated} />
+            </Col>
           </Row>
-        </>
-      );
-    }
-    return <h1>Loading ...</h1>;
+          <style jsx >{`
+            a {
+              color: white;
+            }
+            a:link {
+              text-decoration: none;
+              color: white;
+            }
+            .container-fluid {
+              margin-bottom: 30px;
+            }
+            .btn-outline-primary {
+              color: #007bff !important;
+            }
+            a:hover {
+              color: white !important;
+            }
+          `}
+          </style>
+        </React.Fragment>
+    );
   }
-}
+  return <h1>Loading ...</h1>;
+
+};
 
 const GET_RESTAURANT_DISHES = gql`
   query($id: ID!) {
@@ -90,6 +120,7 @@ const GET_RESTAURANT_DISHES = gql`
     }
   }
 `;
+
 // The `graphql` wrapper executes a GraphQL query and makes the results
 // available on the `data` prop of the wrapped component (RestaurantList)
 export default compose(
@@ -104,4 +135,5 @@ export default compose(
     },
     props: ({ data }) => ({ data }),
   }),
+  defaultPage,
 )(Restaurants);

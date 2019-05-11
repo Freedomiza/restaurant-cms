@@ -2,15 +2,21 @@ import * as React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { Container, Nav, NavItem } from 'reactstrap';
+// import Cookie from 'js-cookie';
+
+import defaultPage from '../hocs/defaultPage';
+import { unsetToken } from '../lib/auth';
 
 type Props = {
   title?: string,
+  loggedUser: any,
+  isAuthenticated: boolean,
 };
 
 type NextProps = {
-  Component: React.ReactNode | any;
-  req: any;
-  ctx?: any;
+  Component: React.ReactNode | any,
+  req: any,
+  ctx?: any,
 };
 
 class Layout extends React.Component<Props> {
@@ -20,12 +26,15 @@ class Layout extends React.Component<Props> {
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
-    return { pageProps };
+    console.log(pageProps);
+    return { ...pageProps };
   }
 
   render () {
     const {
+      isAuthenticated,
       children,
+      loggedUser,
       title = 'This is the default title',
     } = this.props;
 
@@ -54,17 +63,36 @@ class Layout extends React.Component<Props> {
               </Link>
             </NavItem>
 
-            <NavItem className="ml-auto">
-              <Link href="/signin">
-                <a className="nav-link">Sign In</a>
-              </Link>
-            </NavItem>
+            {isAuthenticated ? (
+              <>
+                <NavItem className="ml-auto">
+                  <span style={{ color: 'white', marginRight: 30 }}>
+                    {loggedUser && loggedUser.username}
+                  </span>
+                </NavItem>
+                <NavItem>
+                  <Link href="/">
+                    <a className="logout" onClick={unsetToken}>
+                      Logout
+                    </a>
+                  </Link>
+                </NavItem>
+              </>
+            ) : (
+              <>
+                <NavItem className="ml-auto">
+                  <Link href="/signin">
+                    <a className="nav-link">Sign In</a>
+                  </Link>
+                </NavItem>
 
-            <NavItem>
-              <Link href="/signup">
-                <a className="nav-link"> Sign Up</a>
-              </Link>
-            </NavItem>
+                <NavItem>
+                  <Link href="/signup">
+                    <a className="nav-link"> Sign Up</a>
+                  </Link>
+                </NavItem>
+              </>
+            )}
           </Nav>
         </header>
         <Container>{children}</Container>
@@ -72,4 +100,4 @@ class Layout extends React.Component<Props> {
     );
   }
 }
-export default Layout;
+export default defaultPage(Layout);
