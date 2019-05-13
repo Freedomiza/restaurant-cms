@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import Cookies from 'js-cookie';
 
-import defaultPage from '../components/hoc/defaultPage';
+import defaultPage from '../hocs/defaultPage';
 import { strapiLogin } from '../lib/auth';
 
 type Props = {

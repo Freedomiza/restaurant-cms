@@ -19,7 +19,7 @@ const defaultPageHOC = (Page: any) =>
       path = '';
       return {
         ...pageProps,
-        loggedUser: loggedUser.user,
+        loggedUser: loggedUser ? loggedUser.user: undefined,
         currentUrl: path,
         isAuthenticated: !!loggedUser,
       };
